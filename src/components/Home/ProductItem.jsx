@@ -1,13 +1,34 @@
 "use client";
 import { useCartContext } from "@/providers/CartProvider";
+import { useProductsContext } from "@/providers/ProductsProvider";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-function ProductItem({ price, description, name, img, id }) {
+function ProductItem({
+  price,
+  description,
+  name,
+  img,
+  id,
+  has_product_options,
+}) {
+  const { openModal } = useProductsContext();
   const { addItemToCart, isItemInCartById, incAmountById } = useCartContext();
   const [isDisabled, setIsDisable] = useState(false);
 
   const handleAddItem = () => {
+    if (has_product_options) {
+      openModal({
+        price,
+        description,
+        name,
+        img,
+        id,
+        has_product_options,
+      });
+      return;
+    }
+
     isItemInCartById(id)
       ? incAmountById(id)
       : addItemToCart({ name, price, img, id });
@@ -39,7 +60,7 @@ function ProductItem({ price, description, name, img, id }) {
             alt={img.alt}
             width={img.sizes?.thumbnail?.width}
             height={img.sizes?.thumbnail?.width}
-            className="w-[128px] h-[128px]"
+            className="w-[128px] h-[128px] object-contain"
           />
           {isDisabled && (
             <div className="inset-0 bg-gray-200/50 absolute animate-to-show">

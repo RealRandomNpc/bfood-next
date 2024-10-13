@@ -2,6 +2,11 @@
 import useDebounce from "@/hooks/useDebounce";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import qs from "qs";
+import DefaultModal from "@/components/Modals/DefaultModal";
+import Image from "next/image";
+import ProductModal from "@/components/Modals/ProductModal";
+
+const CLOSING_MODAL_ANIMATION_DURATION = 300;
 
 const getFilteredProducts = async (
   signal,
@@ -95,6 +100,30 @@ const getFilteredProducts = async (
   return await response.json();
 };
 
+const getProductOptions = async (productId, signal) => {
+  const query = {
+    products: {
+      in: productId,
+    },
+  };
+
+  const stringifiedQuery = qs.stringify(
+    {
+      where: query, // ensure that `qs` adds the `where` property, too!
+      depth: 1,
+    },
+    { addQueryPrefix: true }
+  );
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products-options${stringifiedQuery}`,
+    {
+      signal,
+    }
+  );
+
+  return await response.json();
+};
+
 const ProductsContext = createContext();
 export const useProductsContext = () => useContext(ProductsContext);
 
@@ -102,11 +131,26 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isLoadingProductDetails, setIsLoadingProductDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [productModalState, setProductModalState] = useState("close");
+  const [productInModal, setProductInModal] = useState(null);
+  const [productInModalOptions, setProductInModalOptions] = useState(null);
 
   const debouncedSearch = useDebounce("", search);
   const debouncedSelectedTags = useDebounce([], selectedTags);
+
+  const openModal = (selectedProduct) => {
+    setProductModalState("open");
+    setProductInModal(selectedProduct);
+  };
+  const closeModal = () => {
+    setProductModalState("closing");
+    setTimeout(() => {
+      setProductInModal(() => null);
+    }, CLOSING_MODAL_ANIMATION_DURATION);
+  };
 
   useEffect(() => {
     if (!search && selectedTags.length === 0) return;
@@ -143,8 +187,6 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
           }),
         ]);
 
-        console.log("HELLO", queryProducts);
-
         setFilteredProducts(queryProducts?.docs || []);
       } catch (error) {
         setIsError(true);
@@ -159,6 +201,31 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
     };
   }, [debouncedSelectedTags, debouncedSearch]);
 
+  useEffect(() => {
+    if (!productInModal || !productInModal?.id) return;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setIsLoadingProductDetails(true);
+
+    (async () => {
+      try {
+        const productOptions = await getProductOptions(
+          productInModal?.id,
+          signal
+        );
+
+        setProductInModalOptions(productOptions?.docs[0] || null);
+      } catch (error) {
+      } finally {
+        setIsLoadingProductDetails(false);
+      }
+    })();
+
+    return () => {
+      controller.abort();
+    };
+  }, [productInModal]);
+
   return (
     <ProductsContext.Provider
       value={{
@@ -170,9 +237,15 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
         filteredProducts,
         isLoading,
         isError,
+        openModal,
+        closeModal,
+        productModalState,
+        productInModal,
+        productInModalOptions,
       }}
     >
       {children}
+      <ProductModal />
     </ProductsContext.Provider>
   );
 };

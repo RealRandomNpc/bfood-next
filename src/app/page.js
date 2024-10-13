@@ -1,10 +1,5 @@
 import { blocks } from "@/blocks";
 import ProductsContainer from "@/components/Home/ProductsContainer";
-import ProductsDisplay from "@/components/Home/ProductsDisplay";
-import SearchProducts from "@/components/Home/SearchProducts";
-import TagsSelector from "@/components/Home/TagsSelector";
-import ProductsProvider from "@/providers/ProductsProvider";
-import Image from "next/image";
 
 const REVALIDATION_TIME = 60;
 
