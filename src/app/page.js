@@ -1,5 +1,6 @@
 import { blocks } from "@/blocks";
-import ProductsContainer from "@/components/Home/ProductsContainer";
+import ProductsPage from "@/components/Pages/Home/ProductsPage";
+
 
 const REVALIDATION_TIME = 60;
 
@@ -59,25 +60,23 @@ export default async function Home() {
     })),
   ];
 
-  console.log("PAGE DATA", pageData);
-
   return (
-    <main dir="rtl">
-      {pageData?.beforeProducts?.map((b, idx) => {
-        const Block = blocks[b.blockType];
-        if (Block) {
-          return <Block key={"before-blocks-" + idx} {...b} />;
-        }
+    <main>
+        {pageData?.beforeProducts?.map((b, idx) => {
+          const Block = blocks[b.blockType];
+          if (Block) {
+            return <Block key={"before-blocks-" + idx} {...b} />;
+          }
 
-        return null;
-      })}
-      <ProductsContainer
-        cartSettings={cartSettings}
-        preloadedCategories={preloadedCategories}
-        availableTags={availableTags}
-        afterSearchPromoted={pageData.afterSearchPromoted}
-      />
-      <div className="h-screen w-1"></div>
+          return null;
+        })}
+        <ProductsPage
+          cartSettings={cartSettings}
+          preloadedCategories={preloadedCategories}
+          availableTags={availableTags}
+          afterSearchPromoted={pageData.afterSearchPromoted}
+        />
+        <div className="h-screen w-1"></div>
     </main>
   );
 }

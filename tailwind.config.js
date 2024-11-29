@@ -9,7 +9,7 @@ const appColors = {
   },
   "b-bg-primary": "#fff",
   "b-gray": {
-    100: "#f6f6f6",
+    100: "#f7f7f7",
     200: "#eeeeee",
   },
   "b-product": {
@@ -50,6 +50,12 @@ module.exports = {
             opacity: 0,
           },
         },
+        pingSmall: {
+          '75%, 100%': {
+            transform: 'scale(1.1)',
+            opacity: 0
+          },
+        },
         toShowSideBar: {
           to: {
             display: "flex",
@@ -61,6 +67,7 @@ module.exports = {
         "to-show": "toShow 0.5s ease-in forwards",
         "to-hide": "toHide 0.5s ease-in forwards",
         "to-show-sidebar": "toShowSideBar 0.5s ease-in forwards",
+        'ping-small': 'pingSmall 0.5s cubic-bezier(0, 0, 0.2, 1) infinite'
       },
     },
   },

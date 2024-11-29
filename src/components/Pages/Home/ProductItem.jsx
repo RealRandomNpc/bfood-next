@@ -31,7 +31,7 @@ function ProductItem({
 
     isItemInCartById(id)
       ? incAmountById(id)
-      : addItemToCart({ name, price, img, id });
+      : addItemToCart({ name, price, img, id, has_product_options });
     setIsDisable(true);
   };
 

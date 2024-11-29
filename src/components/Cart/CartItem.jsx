@@ -55,7 +55,8 @@ const EXAMPLE = {
 };
 
 function CartItem({ item = EXAMPLE, cartItemIndex }) {
-  const { decAmountByIndex, incAmountByIndex } = useCartContext();
+  const { decAmountByIndex, incAmountByIndex, calculateThisItemPrice } =
+    useCartContext();
 
   return (
     <div className="flex gap-2 items-start">
@@ -70,9 +71,45 @@ function CartItem({ item = EXAMPLE, cartItemIndex }) {
         <div>
           <div className="font-bold leading-none">{item.name}</div>
           {/* FOR ITEM OPTIONS */}
-          <div className=" min-h-5 my-1"></div>
+          <div className="text-xs text-b-text-600">
+            {item?.options?.map((opt) => {
+              if (opt.options_type === "radio") {
+                return (
+                  <div key={opt?.id}>
+                    <span>{opt.title}:</span>{" "}
+                    <span>
+                      {Object.values(opt.selected_options)[0]?.name || "ללא"}
+                    </span>
+                  </div>
+                );
+              }
+              if (opt.options_type === "single") {
+                return (
+                  <div key={opt?.id}>
+                    <div>{opt.title}:</div>
+                    {Object.values(opt.selected_options).map((selectedOpt) => (
+                      <div key={selectedOpt?.id} className="mr-4">
+                        <span>
+                          {"x"}
+                          {selectedOpt?.amount || 1}
+                        </span>{" "}
+                        <span>{selectedOpt?.name}</span>
+                        <span className="text-b-primary-default">
+                          {Boolean(selectedOpt?.extra_price) &&
+                            ` (${selectedOpt?.extra_price?.toFixed(2)})`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+            })}
+          </div>
+          {(!item?.options || item?.options?.length === 0) && (
+            <div className=" min-h-5 my-1"></div>
+          )}
           <div className="text-b-primary-default font-bold">
-            {item.price.toFixed(2)} ₪
+            {calculateThisItemPrice(item).toFixed(2)} ₪
           </div>
         </div>
       </button>

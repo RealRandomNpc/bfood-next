@@ -7,7 +7,7 @@ import ProductsDisplay from "./ProductsDisplay";
 import PromotedSection from "./PromotedSection";
 import CartProvider from "@/providers/CartProvider";
 
-function ProductsContainer({
+function ProductsPage({
   preloadedCategories,
   availableTags,
   afterSearchPromoted,
@@ -25,4 +25,4 @@ function ProductsContainer({
   );
 }
 
-export default ProductsContainer;
+export default ProductsPage;

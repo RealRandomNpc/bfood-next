@@ -110,10 +110,13 @@ function DefaultProductOptionBlock({
                   "border-transparent"
                 }`}
                 title={option?.name}
-                onClick={() => toggleOption(option.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleOption(option.id);
+                }}
               >
                 <div
-                  className={`rounded-full relative w-10 aspect-square bg-gray-200 grid place-items-center overflow-hidden `}
+                  className={`rounded-full relative w-10 h-10 aspect-square bg-gray-200 grid place-items-center overflow-hidden `}
                 >
                   <span className="text-white text-lg font-bold">
                     {option?.name?.slice(0, 1)}

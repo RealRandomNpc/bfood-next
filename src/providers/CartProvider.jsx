@@ -1,14 +1,26 @@
+"use client";
 import BottomSummary from "@/components/Cart/BottomSummary";
 import CartSideBar from "@/components/Cart/CartSideBar";
+import OrderNotesModal from "@/components/Modals/OrderNotesModal";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useRef,
   useState,
 } from "react";
 
-const permittedCartFields = ["id", "amount", "name", "price", "img"];
+const permittedCartFields = [
+  "id",
+  "amount",
+  "name",
+  "price",
+  "img",
+  "options",
+  "has_product_options",
+];
 
 const getPermittedCartFields = (product) => {
   return Object.fromEntries(
@@ -20,20 +32,22 @@ export const CartContext = createContext();
 
 export const useCartContext = () => useContext(CartContext);
 
-const CartProvider = ({ children, cartSettings }) => {
+const CartProvider = ({ children, cartSettings, withSideBar = true }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [cartAmount, setCartAmount] = useState(0);
   const [cartPrice, setCartPrice] = useState(0);
+  const [orderNotesModalState, setOrderNotesModalState] = useState("close");
+  const [orderNotes, setOrderNotes] = useState("");
 
   const isItemInCartById = (productId) => {
     return cartItems.some((item) => item.id === productId);
   };
 
-  const addItemToCart = (product) => {
+  const addItemToCart = (product, amount = 1) => {
     setCartItems((prev) => [
       ...prev.map((p) => ({ ...p })),
-      { ...getPermittedCartFields(product), amount: 1 },
+      { ...getPermittedCartFields(product), amount },
     ]);
   };
 
@@ -99,10 +113,28 @@ const CartProvider = ({ children, cartSettings }) => {
 
   const updateItemByIndex = (cartItemIndex) => {};
 
+  const calculateThisItemPrice = (cartItem) => {
+    const selectedOptionsPrice =
+      (cartItem.options &&
+        Object.values(
+          cartItem.options
+            ?.map((opt) => opt?.selected_options)
+            .reduce((acc, opt) => ({ ...acc, ...opt }), {})
+        ).reduce(
+          (acc, selectedOpt) =>
+            acc + selectedOpt.amount * selectedOpt.extra_price,
+          0
+        )) ||
+      0;
+
+    return cartItem.price + selectedOptionsPrice;
+  };
+
   useEffect(() => {
     const calculateCartPrice = () => {
       return cartItems.reduce(
-        (partialPrice, item) => partialPrice + item.price * item.amount,
+        (partialPrice, item) =>
+          partialPrice + calculateThisItemPrice(item) * item.amount,
         0
       );
     };
@@ -112,7 +144,32 @@ const CartProvider = ({ children, cartSettings }) => {
         .reduce((partialAmount, itemAmount) => partialAmount + itemAmount, 0)
     );
     setCartPrice(calculateCartPrice());
+    localStorage.setItem("last_cart_items", JSON.stringify(cartItems));
   }, [cartItems]);
+
+  useEffect(() => {
+    localStorage.setItem("last_order_notes", JSON.stringify(orderNotes));
+  }, [orderNotes])
+
+  useLayoutEffect(() => {
+    const storageCartItems =
+      localStorage.getItem("last_cart_items") != null
+        ? JSON.parse(localStorage.getItem("last_cart_items"))
+        : [];
+
+    const storageOrderNotes =
+      localStorage.getItem("last_order_notes") != null
+        ? JSON.parse(localStorage.getItem("last_order_notes"))
+        : "";
+    JSON.parse(localStorage.getItem("last_order_notes")) || "";
+
+    if (storageCartItems.length > 0) {
+      setCartItems(storageCartItems);
+    }
+    if (storageOrderNotes) {
+      setOrderNotes(storageOrderNotes);
+    }
+  }, []);
 
   return (
     <CartContext.Provider
@@ -127,15 +184,28 @@ const CartProvider = ({ children, cartSettings }) => {
         isItemInCartById,
         addItemToCart,
         decAmountByIndex,
+        calculateThisItemPrice,
       }}
     >
       {children}
-      <BottomSummary setIsOpen={setIsOpen} />
-      <CartSideBar
-        cartSettings={cartSettings}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+
+      {withSideBar && (
+        <>
+          <BottomSummary setIsOpen={setIsOpen} />
+          <CartSideBar
+            cartSettings={cartSettings}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            triggerOrderNotesModal={() => setOrderNotesModalState("open")}
+          />
+          <OrderNotesModal
+            setOrderNotes={setOrderNotes}
+            setOrderNotesModalState={setOrderNotesModalState}
+            orderNotesModalState={orderNotesModalState}
+            orderNotes={orderNotes}
+          />
+        </>
+      )}
     </CartContext.Provider>
   );
 };

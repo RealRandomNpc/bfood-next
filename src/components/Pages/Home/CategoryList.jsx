@@ -1,4 +1,4 @@
-import ProductItem from "@/components/Home/ProductItem";
+import ProductItem from "@/components/Pages/Home/ProductItem";
 import React from "react";
 
 const CategoryList = ({ products }) => {

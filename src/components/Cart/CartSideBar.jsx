@@ -6,25 +6,12 @@ import React, { useState } from "react";
 import CartItem from "./CartItem";
 import CartActionBtn from "./CartActionBtn";
 import { useCartContext } from "@/providers/CartProvider";
+import useDeliveryMethod from "@/hooks/useDeliveryMethod";
+import CartDetails from "./CartDetails";
 
-const methodToHebrew = {
-  delivery: "משלוח",
-  pickup: "איסוף עצמי",
-};
-
-const methodToIcon = {
-  delivery: DeliveryDining,
-  pickup: Shopping,
-};
-
-function CartSideBar({ isOpen, setIsOpen, cartSettings }) {
+function CartSideBar({ isOpen, setIsOpen, cartSettings, triggerOrderNotesModal }) {
   const { cartItems } = useCartContext();
-  const [deliveryMethods, setDeliveryMethods] = useState(() => {
-    return ["delivery", "pickup"].filter((m) => cartSettings[m]?.is_active);
-  });
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(() => {
-    return ["delivery", "pickup"].filter((m) => cartSettings[m]?.is_active)[0];
-  });
+  const  {methodToIcon, methodToHebrew, selectedDeliveryMethod, deliveryMethods, setSelectedDeliveryMethod} = useDeliveryMethod({cartSettings});
 
   console.log("CART SETTINGS", cartSettings);
   return (
@@ -100,13 +87,9 @@ function CartSideBar({ isOpen, setIsOpen, cartSettings }) {
             </div>
           )}
           <div className="w-full mt-3 font-semibold px-3">ההזמנה שלי</div>
-          <div className="grow w-full flex flex-col gap-2 p-4 rounded-xl border border-b-b-product-border mt-1 overflow-y-auto">
-            {cartItems.map((item, idx) => (
-              <CartItem key={idx} item={item} cartItemIndex={idx} />
-            ))}
-          </div>
+          <CartDetails />
           <div className="px-2 mt-2 w-full">
-            <button className="flex items-center gap-2 w-full py-2 px-2 rounded-xl active:bg-gray-100">
+            <button className="flex items-center gap-2 w-full py-2 px-2 rounded-xl active:bg-gray-100" onClick={() => triggerOrderNotesModal()}>
               <div className="grid place-items-center p-2 bg-gray-200 rounded-full">
                 <Image
                   src={"/assets/icons/chat.svg"}
@@ -120,7 +103,7 @@ function CartSideBar({ isOpen, setIsOpen, cartSettings }) {
             </button>
           </div>
           <div className="px-2 mt-2 w-full">
-            <CartActionBtn />
+            <CartActionBtn href="/payment"/>
           </div>
         </div>
       </div>

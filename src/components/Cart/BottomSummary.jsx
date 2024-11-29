@@ -18,7 +18,7 @@ function BottomSummary({ setIsOpen }) {
   return (
     <div className="fixed z-10 bottom-0 w-full">
       <div className="mx-auto p-2 w-full max-w-[380px] ">
-        {scrollPosition > 400 && (
+        {scrollPosition > 150 && (
           <CartActionBtn
             text="לצפייה בהזמנה"
             onClick={() => setIsOpen((prev) => !prev)}

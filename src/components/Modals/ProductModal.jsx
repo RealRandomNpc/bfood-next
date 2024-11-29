@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useProductsContext } from "@/providers/ProductsProvider";
 import { IoAddSharp } from "react-icons/io5";
 import { blocks } from "@/blocks";
+import { useCartContext } from "@/providers/CartProvider";
 
 function ProductModal() {
   const {
@@ -11,7 +12,10 @@ function ProductModal() {
     productModalState,
     productInModal,
     productInModalOptions,
+    setProductModalState,
   } = useProductsContext();
+
+  const { addItemToCart } = useCartContext();
 
   const [selectedOptionsArr, setSelectedOptionsArr] = useState(() =>
     new Array(productInModalOptions?.product_options_blocks?.length || 0).fill(
@@ -32,6 +36,7 @@ function ProductModal() {
       modalId={"product-options-modal"}
       modalState={productModalState}
       closeModal={closeModal}
+      setModalState={setProductModalState}
     >
       <div className="py-2 flex items-center justify-between">
         <div className="w-fit leading-none">
@@ -74,7 +79,21 @@ function ProductModal() {
         })}
       </div>
 
-      <button className="bg-b-primary-default flex items-center justify-center gap-2 rounded-lg py-3 px-3 w-full text-b-text-900 font-semibold active:brightness-95 mt-2">
+      <button
+        onClick={(e) => {
+          addItemToCart({
+            name: productInModal.name,
+            price: productInModal.price,
+            img: productInModal.img,
+            id: productInModal.id,
+            options: productInModalOptions?.product_options_blocks.map(
+              (b, idx) => ({ ...b, selected_options: selectedOptionsArr[idx] })
+            ),
+          });
+          closeModal();
+        }}
+        className="bg-b-primary-default flex items-center justify-center gap-2 rounded-lg py-3 px-3 w-full text-b-text-900 font-semibold active:brightness-95 mt-2"
+      >
         <span>הוסף</span>
         <IoAddSharp size={20} className="text-b-text-900" />
       </button>

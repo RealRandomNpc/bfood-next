@@ -2,11 +2,9 @@
 import useDebounce from "@/hooks/useDebounce";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import qs from "qs";
-import DefaultModal from "@/components/Modals/DefaultModal";
-import Image from "next/image";
 import ProductModal from "@/components/Modals/ProductModal";
 
-const CLOSING_MODAL_ANIMATION_DURATION = 300;
+const CLOSING_MODAL_ANIMATION_DURATION = 330;
 
 const getFilteredProducts = async (
   signal,
@@ -146,7 +144,7 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
     setProductInModal(selectedProduct);
   };
   const closeModal = () => {
-    setProductModalState("closing");
+    setProductModalState("close");
     setTimeout(() => {
       setProductInModal(() => null);
     }, CLOSING_MODAL_ANIMATION_DURATION);
@@ -183,7 +181,7 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
             debouncedSearch
           ),
           new Promise((resolve) => {
-            setTimeout(resolve, 1500);
+            setTimeout(resolve, 500);
           }),
         ]);
 
@@ -239,6 +237,7 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
         isError,
         openModal,
         closeModal,
+        setProductModalState,
         productModalState,
         productInModal,
         productInModalOptions,

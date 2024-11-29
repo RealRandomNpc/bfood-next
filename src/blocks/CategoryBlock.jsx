@@ -1,4 +1,4 @@
-import CategoryList from "@/components/Home/CategoryList";
+import CategoryList from "@/components/Pages/Home/CategoryList";
 import React from "react";
 
 const CategoryBlock = ({ products, title, sub_title }) => {
