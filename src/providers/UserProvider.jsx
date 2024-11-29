@@ -1,5 +1,6 @@
 'use client';
 import UserConnectModal from '@/components/Modals/UserConnectModal';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { HiBuildingOffice } from 'react-icons/hi2';
 import { IoMdHome } from 'react-icons/io';
@@ -45,8 +46,8 @@ const residenceTypeToHebrew = {
 };
 
 function UserProvider({ children}) {
-  const [userAddresses, setUserAddresses] = useState([])
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1)
+  const [userAddresses, setUserAddresses] = useLocalStorage('user_addresses', []);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useLocalStorage('selected_address_index',-1)
   const [userConnectModalState, setUserConnectModalState] = useState("close");
 
   const addUserAddress = (address) => setUserAddresses(prev => [...prev, address])
@@ -57,26 +58,6 @@ function UserProvider({ children}) {
       setSelectedAddressIndex(0)
     }
   }, [userAddresses, selectedAddressIndex])
-
-  useEffect(() => {
-    localStorage.setItem('userAddresses', JSON.stringify(userAddresses));
-  }, [userAddresses])
-  useEffect(() => {
-    localStorage.setItem('selectedAddressIndex', JSON.stringify(selectedAddressIndex));
-  }, [selectedAddressIndex])
-
-  useLayoutEffect(() => {
-    const storageUserAddresses =JSON.parse(localStorage.getItem('userAddresses') ?? '') || [];
-    const storageSelectedAddressIndex = JSON.parse(localStorage.getItem('selectedAddressIndex')) || -1;
-
-    if (storageSelectedAddressIndex > -1) {
-      setSelectedAddressIndex(storageSelectedAddressIndex)
-    }
-    if (storageUserAddresses.length > 0) {
-      setUserAddresses(storageUserAddresses)
-    }
-
-  }, [])
 
   return (
     <UserContext.Provider value={{userAddresses, addUserAddress, selectedAddressIndex, setSelectedAddressIndex, residenceTypeToIcon, residenceTypeToHebrew, triggerConnectModal}}>

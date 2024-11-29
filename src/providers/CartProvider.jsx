@@ -2,6 +2,7 @@
 import BottomSummary from "@/components/Cart/BottomSummary";
 import CartSideBar from "@/components/Cart/CartSideBar";
 import OrderNotesModal from "@/components/Modals/OrderNotesModal";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   createContext,
   useCallback,
@@ -34,11 +35,11 @@ export const useCartContext = () => useContext(CartContext);
 
 const CartProvider = ({ children, cartSettings, withSideBar = true }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useLocalStorage('last_cart_items',[]);
   const [cartAmount, setCartAmount] = useState(0);
   const [cartPrice, setCartPrice] = useState(0);
   const [orderNotesModalState, setOrderNotesModalState] = useState("close");
-  const [orderNotes, setOrderNotes] = useState("");
+  const [orderNotes, setOrderNotes] = useLocalStorage('last_order_notes',"");
 
   const isItemInCartById = (productId) => {
     return cartItems.some((item) => item.id === productId);
@@ -144,32 +145,7 @@ const CartProvider = ({ children, cartSettings, withSideBar = true }) => {
         .reduce((partialAmount, itemAmount) => partialAmount + itemAmount, 0)
     );
     setCartPrice(calculateCartPrice());
-    localStorage.setItem("last_cart_items", JSON.stringify(cartItems));
   }, [cartItems]);
-
-  useEffect(() => {
-    localStorage.setItem("last_order_notes", JSON.stringify(orderNotes));
-  }, [orderNotes])
-
-  useLayoutEffect(() => {
-    const storageCartItems =
-      localStorage.getItem("last_cart_items") != null
-        ? JSON.parse(localStorage.getItem("last_cart_items"))
-        : [];
-
-    const storageOrderNotes =
-      localStorage.getItem("last_order_notes") != null
-        ? JSON.parse(localStorage.getItem("last_order_notes"))
-        : "";
-    JSON.parse(localStorage.getItem("last_order_notes")) || "";
-
-    if (storageCartItems.length > 0) {
-      setCartItems(storageCartItems);
-    }
-    if (storageOrderNotes) {
-      setOrderNotes(storageOrderNotes);
-    }
-  }, []);
 
   return (
     <CartContext.Provider
