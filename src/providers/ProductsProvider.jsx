@@ -3,15 +3,16 @@ import useDebounce from "@/hooks/useDebounce";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import qs from "qs";
 import ProductModal from "@/components/Modals/ProductModal";
+import useSWR from "swr";
 
 const CLOSING_MODAL_ANIMATION_DURATION = 330;
 
-const getFilteredProducts = async (
-  signal,
+const getFilteredProducts = async ({
+  // signal,
   selectedTagsNames = [],
   selectedCategoriesNames = [],
-  search = ""
-) => {
+  search = "",
+}) => {
   if (!search && !selectedTagsNames.length && !selectedCategoriesNames.length)
     return;
 
@@ -89,10 +90,10 @@ const getFilteredProducts = async (
   );
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`,
-    {
-      signal,
-    }
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`
+    // {
+    //   signal,
+    // }
   );
 
   return await response.json();
@@ -128,9 +129,9 @@ export const useProductsContext = () => useContext(ProductsContext);
 const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  // const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoadingProductDetails, setIsLoadingProductDetails] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [productModalState, setProductModalState] = useState("close");
   const [productInModal, setProductInModal] = useState(null);
@@ -138,6 +139,21 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
 
   const debouncedSearch = useDebounce("", search);
   const debouncedSelectedTags = useDebounce([], selectedTags);
+
+  const { data: filteredProducts, error: isProductsError, isLoading } = useSWR(
+    {
+      selectedTagsNames: debouncedSelectedTags
+        .filter((tag) => tag?.type !== "category")
+        .map((t) => t.name),
+      selectedCategoriesNames: debouncedSelectedTags
+        .filter((tag) => tag?.type === "category")
+        .map((t) => t.name),
+      debouncedSearch
+    },
+    getFilteredProducts, {
+      fallbackData: []
+    }
+  );
 
   const openModal = (selectedProduct) => {
     setProductModalState("open");
@@ -150,11 +166,11 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
     }, CLOSING_MODAL_ANIMATION_DURATION);
   };
 
-  useEffect(() => {
-    if (!search && selectedTags.length === 0) return;
+  // useEffect(() => {
+  //   if (!search && selectedTags.length === 0) return;
 
-    setIsLoading(true);
-  }, [selectedTags, search]);
+  //   setIsLoading(true);
+  // }, [selectedTags, search]);
 
   // useEffect(() => {
   //   if (!debouncedSearch && debouncedSelectedTags.length === 0) {
@@ -172,12 +188,12 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   //       const [queryProducts, _] = await Promise.all([
   //         getFilteredProducts(
   //           signal,
-  //           debouncedSelectedTags
-  //             .filter((tag) => tag?.type !== "category")
-  //             .map((t) => t.name),
-  //           debouncedSelectedTags
-  //             .filter((tag) => tag?.type === "category")
-  //             .map((t) => t.name),
+  // debouncedSelectedTags
+  //   .filter((tag) => tag?.type !== "category")
+  //   .map((t) => t.name),
+  // debouncedSelectedTags
+  //   .filter((tag) => tag?.type === "category")
+  //   .map((t) => t.name),
   //           debouncedSearch
   //         ),
   //         new Promise((resolve) => {

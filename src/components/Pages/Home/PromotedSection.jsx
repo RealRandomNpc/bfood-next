@@ -1,11 +1,34 @@
 "use client";
 import { blocks } from "@/blocks";
 import { useProductsContext } from "@/providers/ProductsProvider";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function PromotedSection({ afterSearchPromoted }) {
+  const [isNoResults, setIsNoResults] = useState(false);
   const { filteredProducts, isLoading, isError, search, selectedTags } =
     useProductsContext();
+
+  useEffect(() => {
+    if (
+      filteredProducts.length === 0 &&
+      !isLoading &&
+      !isError &&
+      (search || selectedTags?.length > 0)
+    ) {
+      const t = setTimeout(() => setIsNoResults(true), 600);
+      return () => {
+        clearTimeout(t);
+      };
+    } else {
+      setIsNoResults(false);
+    }
+  }, [
+    filteredProducts.length,
+    isError,
+    isLoading,
+    search,
+    selectedTags?.length,
+  ]);
 
   return (
     <>
@@ -15,10 +38,7 @@ function PromotedSection({ afterSearchPromoted }) {
           בעיה בבקשה לשרת, אנא נסה שנית
         </div>
       )}
-      {filteredProducts.length === 0 &&
-        !isLoading &&
-        !isError &&
-        (search || selectedTags?.length > 0) && (
+      {isNoResults && (
           <div className="text-center mx-auto my-8 text-lg">
             לא נמצאו תוצאות עבור החיפוש...
           </div>
