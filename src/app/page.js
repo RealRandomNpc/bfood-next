@@ -4,6 +4,8 @@ import ProductsPage from "@/components/Pages/Home/ProductsPage";
 
 const REVALIDATION_TIME = 60;
 
+export const revalidate = 360;
+
 const getIndexPage = async () => {
   const pageRes = await fetch(
     `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/index-page`,

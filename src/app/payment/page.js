@@ -3,6 +3,8 @@ import PaymentPage from "@/components/Pages/Payment/PaymentPage";
 
 const REVALIDATION_TIME = 60;
 
+export const revalidate = 360;
+
 const getPaymentPage = async () => {
   const pageRes = await fetch(
     `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/payment-page`,
@@ -19,12 +21,10 @@ const getCartSettings = async () => {
 };
 
 export default async function Payment() {
-  const [pageData, cartSettings] =
-    await Promise.all([
-      getPaymentPage(),
-      getCartSettings()
-    ]);
-
+  const [pageData, cartSettings] = await Promise.all([
+    getPaymentPage(),
+    getCartSettings(),
+  ]);
 
   return (
     <main>
