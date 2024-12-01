@@ -90,10 +90,11 @@ const getFilteredProducts = async ({
   );
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`
-    // {
-    //   signal,
-    // }
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`,
+    {
+      // signal,
+      mode: 'no-cors'
+    }
   );
 
   return (await response.json()).docs;
@@ -116,7 +117,9 @@ const getProductOptions = async (productId) => {
     { addQueryPrefix: true }
   );
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products-options${stringifiedQuery}`
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products-options${stringifiedQuery}`, {
+      mode: 'no-cors'
+    }
   );
 
   return (await response.json()).docs[0];
