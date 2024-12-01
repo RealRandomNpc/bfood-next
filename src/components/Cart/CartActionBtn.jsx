@@ -30,6 +30,7 @@ function CartActionBtn({
             className
           )}
           href={href}
+          prefetch={false}
         >
           <InnerComponent />
         </Link>

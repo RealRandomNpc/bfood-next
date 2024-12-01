@@ -25,8 +25,9 @@ function PaymentPage({ cartSettings }) {
           <div>
             <div className="flex items-center gap-2 px-2 my-2">
               <Link
-                href={"/"}
+                href={""}
                 className="rounded-full aspect-square p-2 bg-b-gray-100"
+                prefetch={false}
               >
                 <BsArrowRight />
               </Link>
