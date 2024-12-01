@@ -10,23 +10,23 @@ export const dynamic = 'force-dynamic'
 
 const getIndexPage = async () => {
   const pageRes = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/index-page`,
-    { next: { revalidate: REVALIDATION_TIME } }
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/index-page`
+    // { next: { revalidate: REVALIDATION_TIME } }
   );
   return await pageRes.json();
 };
 const getCartSettings = async () => {
   const pageRes = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/cart-settings`,
-    { next: { revalidate: REVALIDATION_TIME } }
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/cart-settings`
+    // { next: { revalidate: REVALIDATION_TIME } }
   );
   return await pageRes.json();
 };
 
 const getCategories = async () => {
   const categoriesRes = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/categories?limit=200&sort=-priority`,
-    { next: { revalidate: REVALIDATION_TIME } }
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/categories?limit=200&sort=-priority`
+    // { next: { revalidate: REVALIDATION_TIME } }
   );
 
   const categoriesJson = await categoriesRes.json();
@@ -37,7 +37,7 @@ const getCategories = async () => {
 const getTags = async () => {
   const tagsRes = await fetch(
     `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/tags?limit=200`,
-    { next: { revalidate: REVALIDATION_TIME } }
+    // { next: { revalidate: REVALIDATION_TIME } }
   );
 
   const tagsJson = await tagsRes.json();
