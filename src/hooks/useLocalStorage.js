@@ -7,6 +7,9 @@ const useLocalStorage = (key, defaultValue) => {
   const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
     try {
       if (isMounted.current) {
         window.localStorage.setItem(key, JSON.stringify(value));
@@ -19,6 +22,10 @@ const useLocalStorage = (key, defaultValue) => {
   }, [value, key]);
 
   useLayoutEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
     try {
       const storageValue = window.localStorage.getItem(key) != null ? JSON.parse(window.localStorage.getItem(key)) : defaultValue;
   
@@ -40,6 +47,9 @@ const useLocalStorage = (key, defaultValue) => {
   }, [])
 
   const clearStorage = () => {
+    if (typeof window === "undefined") {
+      return
+    }
     setValue(defaultValue)
     if (isMounted.current) {
       window.localStorage.setItem(key, JSON.stringify(defaultValue));
