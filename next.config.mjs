@@ -10,13 +10,13 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: process.env.NEXT_PUBLIC_PAYLOAD_URL,
+        hostname: process.env.NEXT_PUBLIC_PAYLOAD_HOSTNAME,
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_PAYLOAD_URL,
+        hostname: process.env.NEXT_PUBLIC_PAYLOAD_HOSTNAME,
         port: "",
         pathname: "/**",
       },
