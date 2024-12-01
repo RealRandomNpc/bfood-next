@@ -55,6 +55,7 @@ export default async function Home() {
       getTags(),
       getCartSettings(),
     ]);
+  console.log("RETURNED DATA", pageData, preloadedCategories, existingTags, cartSettings)
   const availableTags = [
     ...existingTags,
     ...preloadedCategories.map((c) => ({
