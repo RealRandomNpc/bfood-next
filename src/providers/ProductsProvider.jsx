@@ -89,12 +89,15 @@ const getFilteredProducts = async ({
     { addQueryPrefix: true }
   );
 
+  const fullUrl = new URL(
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`
+  );
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`,
-    {
-      // signal,
-      mode: 'no-cors'
-    }
+    fullUrl
+    // {
+    //   // signal,
+    //   mode: 'no-cors'
+    // }
   );
 
   return (await response.json()).docs;
@@ -116,11 +119,12 @@ const getProductOptions = async (productId) => {
     },
     { addQueryPrefix: true }
   );
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products-options${stringifiedQuery}`, {
-      mode: 'no-cors'
-    }
+  const fullUrl = new URL(
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products-options${stringifiedQuery}`
   );
+  const response = await fetch(fullUrl, {
+    // mode: 'no-cors'
+  });
 
   return (await response.json()).docs[0];
 };
@@ -142,7 +146,11 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   const debouncedSearch = useDebounce("", search);
   const debouncedSelectedTags = useDebounce([], selectedTags);
 
-  const { data: filteredProducts, error: isProductsError, isLoading } = useSWR(
+  const {
+    data: filteredProducts,
+    error: isProductsError,
+    isLoading,
+  } = useSWR(
     {
       selectedTagsNames: debouncedSelectedTags
         .filter((tag) => tag?.type !== "category")
@@ -150,17 +158,19 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
       selectedCategoriesNames: debouncedSelectedTags
         .filter((tag) => tag?.type === "category")
         .map((t) => t.name),
-      debouncedSearch
+      debouncedSearch,
     },
-    getFilteredProducts, {
-      fallbackData: []
+    getFilteredProducts,
+    {
+      fallbackData: [],
     }
   );
-  console.log("productInModal?.id", productInModal?.id)
-  const {data: productInModalOptions, isLoading: isLoadingProductDetails, error: errorProductsDetails} = useSWR(
-    productInModal?.id,
-    getProductOptions
-  )
+  console.log("productInModal?.id", productInModal?.id);
+  const {
+    data: productInModalOptions,
+    isLoading: isLoadingProductDetails,
+    error: errorProductsDetails,
+  } = useSWR(productInModal?.id, getProductOptions);
 
   const openModal = (selectedProduct) => {
     setProductModalState("open");
