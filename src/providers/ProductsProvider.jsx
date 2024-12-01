@@ -130,7 +130,7 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoadingProductDetails, setIsLoadingProductDetails] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [productModalState, setProductModalState] = useState("close");
   const [productInModal, setProductInModal] = useState(null);
@@ -156,73 +156,73 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
     setIsLoading(true);
   }, [selectedTags, search]);
 
-  useEffect(() => {
-    if (!debouncedSearch && debouncedSelectedTags.length === 0) {
-      setFilteredProducts([]);
-      return;
-    }
-    setIsLoading(true);
-    setIsError(false);
+  // useEffect(() => {
+  //   if (!debouncedSearch && debouncedSelectedTags.length === 0) {
+  //     setFilteredProducts([]);
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   setIsError(false);
 
-    const controller = new AbortController();
-    const signal = controller.signal;
+  //   const controller = new AbortController();
+  //   const signal = controller.signal;
 
-    (async () => {
-      try {
-        const [queryProducts, _] = await Promise.all([
-          getFilteredProducts(
-            signal,
-            debouncedSelectedTags
-              .filter((tag) => tag?.type !== "category")
-              .map((t) => t.name),
-            debouncedSelectedTags
-              .filter((tag) => tag?.type === "category")
-              .map((t) => t.name),
-            debouncedSearch
-          ),
-          new Promise((resolve) => {
-            setTimeout(resolve, 500);
-          }),
-        ]);
+  //   (async () => {
+  //     try {
+  //       const [queryProducts, _] = await Promise.all([
+  //         getFilteredProducts(
+  //           signal,
+  //           debouncedSelectedTags
+  //             .filter((tag) => tag?.type !== "category")
+  //             .map((t) => t.name),
+  //           debouncedSelectedTags
+  //             .filter((tag) => tag?.type === "category")
+  //             .map((t) => t.name),
+  //           debouncedSearch
+  //         ),
+  //         new Promise((resolve) => {
+  //           setTimeout(resolve, 500);
+  //         }),
+  //       ]);
 
-        setFilteredProducts(queryProducts?.docs || []);
-      } catch (error) {
-        setIsError(true);
-        console.log("Some error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+  //       setFilteredProducts(queryProducts?.docs || []);
+  //     } catch (error) {
+  //       setIsError(true);
+  //       console.log("Some error:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   })();
 
-    return () => {
-      controller.abort();
-    };
-  }, [debouncedSelectedTags, debouncedSearch]);
+  //   return () => {
+  //     controller.abort();
+  //   };
+  // }, [debouncedSelectedTags, debouncedSearch]);
 
-  useEffect(() => {
-    if (!productInModal || !productInModal?.id) return;
-    const controller = new AbortController();
-    const signal = controller.signal;
-    setIsLoadingProductDetails(true);
+  // useEffect(() => {
+  //   if (!productInModal || !productInModal?.id) return;
+  //   const controller = new AbortController();
+  //   const signal = controller.signal;
+  //   setIsLoadingProductDetails(true);
 
-    (async () => {
-      try {
-        const productOptions = await getProductOptions(
-          productInModal?.id,
-          signal
-        );
+  //   (async () => {
+  //     try {
+  //       const productOptions = await getProductOptions(
+  //         productInModal?.id,
+  //         signal
+  //       );
 
-        setProductInModalOptions(productOptions?.docs[0] || null);
-      } catch (error) {
-      } finally {
-        setIsLoadingProductDetails(false);
-      }
-    })();
+  //       setProductInModalOptions(productOptions?.docs[0] || null);
+  //     } catch (error) {
+  //     } finally {
+  //       setIsLoadingProductDetails(false);
+  //     }
+  //   })();
 
-    return () => {
-      controller.abort();
-    };
-  }, [productInModal]);
+  //   return () => {
+  //     controller.abort();
+  //   };
+  // }, [productInModal]);
 
   return (
     <ProductsContext.Provider
