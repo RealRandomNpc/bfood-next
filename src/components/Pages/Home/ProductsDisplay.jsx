@@ -16,6 +16,7 @@ function ProductsDisplay() {
       {!isError && !isLoading && (
         <>
           {filteredProducts.length === 0 &&
+            !(search || selectedTags?.length > 0) &&
             preloadedCategories.map((category) => (
               <div key={category.id}>
                 <div className="text-xl leading-tight text-b-text-900 font-bold">

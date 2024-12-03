@@ -7,12 +7,12 @@ import useSWR from "swr";
 
 const CLOSING_MODAL_ANIMATION_DURATION = 330;
 
-const getFilteredProducts = async ({
+const getFilteredProducts = async ([
   // signal,
   selectedTagsNames = [],
   selectedCategoriesNames = [],
   search = "",
-}) => {
+]) => {
   if (!search && !selectedTagsNames.length && !selectedCategoriesNames.length)
     return;
 
@@ -92,13 +92,9 @@ const getFilteredProducts = async ({
   const fullUrl = new URL(
     `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/products${stringifiedQuery}`
   );
-  const response = await fetch(
-    fullUrl
-    // {
-    //   // signal,
-    //   mode: 'no-cors'
-    // }
-  );
+  const response = await fetch(fullUrl, {
+    // signal,
+  });
 
   return (await response.json()).docs;
 };
@@ -151,21 +147,20 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
     error: isProductsError,
     isLoading,
   } = useSWR(
-    {
-      selectedTagsNames: debouncedSelectedTags
+    () => [
+      debouncedSelectedTags
         .filter((tag) => tag?.type !== "category")
         .map((t) => t.name),
-      selectedCategoriesNames: debouncedSelectedTags
+      debouncedSelectedTags
         .filter((tag) => tag?.type === "category")
         .map((t) => t.name),
       debouncedSearch,
-    },
+    ],
     getFilteredProducts,
     {
       fallbackData: [],
     }
   );
-  console.log("productInModal?.id", productInModal?.id);
   const {
     data: productInModalOptions,
     isLoading: isLoadingProductDetails,
@@ -203,16 +198,16 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   //   (async () => {
   //     try {
   //       const [queryProducts, _] = await Promise.all([
-  //         getFilteredProducts(
+  //         getFilteredProducts([
   //           signal,
-  // debouncedSelectedTags
-  //   .filter((tag) => tag?.type !== "category")
-  //   .map((t) => t.name),
-  // debouncedSelectedTags
-  //   .filter((tag) => tag?.type === "category")
-  //   .map((t) => t.name),
-  //           debouncedSearch
-  //         ),
+  //           debouncedSelectedTags
+  //             .filter((tag) => tag?.type !== "category")
+  //             .map((t) => t.name),
+  //           debouncedSelectedTags
+  //             .filter((tag) => tag?.type === "category")
+  //             .map((t) => t.name),
+  //           debouncedSearch,
+  //         ]),
   //         new Promise((resolve) => {
   //           setTimeout(resolve, 500);
   //         }),
