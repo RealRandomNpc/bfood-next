@@ -12,7 +12,7 @@ function ProductsDisplay() {
     selectedTags,
   } = useProductsContext();
   return (
-    <div className="mx-auto max-w-5xl px-2 py-6 relative">
+    <div className="mx-auto max-w-5xl px-2 pt-6 pb-20 relative">
       {!isError && !isLoading && (
         <>
           {filteredProducts.length === 0 &&

@@ -27,7 +27,7 @@ function PaymentPage({ cartSettings }) {
               <Link
                 href={"/"}
                 className="rounded-full aspect-square p-2 bg-b-gray-100"
-                prefetch={false}
+                // prefetch={false}
               >
                 <BsArrowRight />
               </Link>

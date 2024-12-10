@@ -1,44 +1,33 @@
 import { blocks } from "@/blocks";
 import PaymentPage from "@/components/Pages/Payment/PaymentPage";
-
-const REVALIDATION_TIME = 60;
+import Footer from "@/components/ui/Footer";
+import { getCartSettings, getFooterSettings, getPaymentPage } from "@/utils/fetchCMS";
 
 export const revalidate = 360;
 
-export const dynamic = 'force-dynamic'
-
-const getPaymentPage = async () => {
-  const pageRes = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/payment-page`,
-    { next: { revalidate: REVALIDATION_TIME } }
-  );
-  return await pageRes.json();
-};
-const getCartSettings = async () => {
-  const pageRes = await fetch(
-    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/globals/cart-settings`,
-    { next: { revalidate: REVALIDATION_TIME } }
-  );
-  return await pageRes.json();
-};
+export const dynamic = "force-dynamic";
 
 export default async function Payment() {
-  const [pageData, cartSettings] = await Promise.all([
+  const [pageData, cartSettings, footerSettings] = await Promise.all([
     getPaymentPage(),
     getCartSettings(),
+    getFooterSettings()
   ]);
 
   return (
-    <main>
-      {pageData?.beforeProducts?.map((b, idx) => {
-        const Block = blocks[b.blockType];
-        if (Block) {
-          return <Block key={"before-blocks-" + idx} {...b} />;
-        }
+    <>
+      <main>
+        {pageData?.beforeProducts?.map((b, idx) => {
+          const Block = blocks[b.blockType];
+          if (Block) {
+            return <Block key={"before-blocks-" + idx} {...b} />;
+          }
 
-        return null;
-      })}
-      <PaymentPage cartSettings={cartSettings} />
-    </main>
+          return null;
+        })}
+        <PaymentPage cartSettings={cartSettings} />
+      </main>
+      <Footer footerSettings={footerSettings}/>
+    </>
   );
 }

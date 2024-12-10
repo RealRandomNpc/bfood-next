@@ -37,6 +37,7 @@ function ProductModal() {
       modalState={productModalState}
       closeModal={closeModal}
       setModalState={setProductModalState}
+      className={"max-h-[80vh]"}
     >
       <div className="py-2 flex items-center justify-between">
         <div className="w-fit leading-none">
@@ -56,7 +57,7 @@ function ProductModal() {
         </div>
       </div>
       <div className="mt-1 mb-3 h-px w-full bg-b-product-border"></div>
-      <div className="flex flex-col gap-3 w-full">
+      <div className="flex flex-col gap-3 w-full overflow-y-auto max-h-[50vh]">
         {productInModalOptions?.product_options_blocks?.map((b, idx) => {
           const Block = blocks[b.blockType];
 
@@ -97,6 +98,7 @@ function ProductModal() {
         <span>הוסף</span>
         <IoAddSharp size={20} className="text-b-text-900" />
       </button>
+      <div className="w-full h-7 md:h-0"></div>
     </DefaultModal>
   );
 }

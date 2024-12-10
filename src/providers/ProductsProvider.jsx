@@ -128,7 +128,11 @@ const getProductOptions = async (productId) => {
 const ProductsContext = createContext();
 export const useProductsContext = () => useContext(ProductsContext);
 
-const ProductsProvider = ({ children, preloadedCategories = [] }) => {
+const ProductsProvider = ({
+  children,
+  preloadedCategories = [],
+  preloadedProductOptions = [],
+}) => {
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   // const [filteredProducts, setFilteredProducts] = useState([]);
@@ -137,7 +141,7 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   const [isError, setIsError] = useState(false);
   const [productModalState, setProductModalState] = useState("close");
   const [productInModal, setProductInModal] = useState(null);
-  // const [productInModalOptions, setProductInModalOptions] = useState(null);
+  const [productInModalOptions, setProductInModalOptions] = useState(null);
 
   const debouncedSearch = useDebounce("", search);
   const debouncedSelectedTags = useDebounce([], selectedTags);
@@ -161,11 +165,11 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
       fallbackData: [],
     }
   );
-  const {
-    data: productInModalOptions,
-    isLoading: isLoadingProductDetails,
-    error: errorProductsDetails,
-  } = useSWR(productInModal?.id, getProductOptions);
+  // const {
+  //   data: productInModalOptions,
+  //   isLoading: isLoadingProductDetails,
+  //   error: errorProductsDetails,
+  // } = useSWR(productInModal?.id, getProductOptions);
 
   const openModal = (selectedProduct) => {
     setProductModalState("open");
@@ -251,6 +255,18 @@ const ProductsProvider = ({ children, preloadedCategories = [] }) => {
   //     controller.abort();
   //   };
   // }, [productInModal]);
+
+  useEffect(() => {
+    if (!productInModal?.id) {
+      return;
+    }
+    const productOptions = preloadedProductOptions.find((opt) =>
+      opt.products?.map((p) => p.id).includes(productInModal?.id)
+    );
+    if (productOptions) {
+      setProductInModalOptions(productOptions);
+    }
+  }, [productInModal?.id, preloadedProductOptions]);
 
   return (
     <ProductsContext.Provider

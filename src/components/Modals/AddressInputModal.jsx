@@ -65,6 +65,7 @@ function AddressInputModal({ addressModalState, setAddressModalState }) {
     console.log(formObject);
 
     addUserAddress(formObject);
+    closeModal();
   };
 
   return (

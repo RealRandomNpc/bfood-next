@@ -12,10 +12,11 @@ function ProductsPage({
   availableTags,
   afterSearchPromoted,
   cartSettings,
+  preloadedProductOptions
 }) {
   return (
     <CartProvider cartSettings={cartSettings}>
-      <ProductsProvider preloadedCategories={preloadedCategories}>
+      <ProductsProvider preloadedCategories={preloadedCategories} preloadedProductOptions={preloadedProductOptions}>
         <SearchProducts />
         <TagsSelector availableTags={availableTags} />
         <PromotedSection afterSearchPromoted={afterSearchPromoted} />

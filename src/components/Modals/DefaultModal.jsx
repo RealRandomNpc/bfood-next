@@ -81,7 +81,7 @@ function DefaultModal({
       >
         <div
           className={cn(
-            `relative min-w-full sm:min-w-[370px] md:min-w-[420px] w-full  py-6 px-6 bg-b-product-bg border border-b-product-border text-b-text-900 rounded-t-lg md:rounded-lg`,
+            `relative min-w-full sm:min-w-[370px] md:min-w-[420px] w-full max-h-[90vh] py-6 px-6 bg-b-product-bg border border-b-product-border text-b-text-900 rounded-t-lg md:rounded-lg`,
             className
           )}
         >
